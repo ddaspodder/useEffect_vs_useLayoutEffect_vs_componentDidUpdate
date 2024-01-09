@@ -4,23 +4,26 @@ class WithComponentDidUpdate extends React.Component {
   constructor() {
     super();
     this.state = {
-      count: -1,
+      count1: 0,
+      count2: 0,
     };
+    this.divRefs = new Array(10000).fill(null).map((_, i) => React.createRef());
   }
 
-  componentDidMount() {
-    for (let i = 0; i < 1000000000; i++) {}
-    this.setState({ count: 0 });
-  }
-
-  componentDidUpdate(prevProps) {
-    for (let i = 0; i < 1000000000; i++) {}
-    if (this.state.count > 0 && this.state.count % 2 === 1)
-      this.setState({ count: this.state.count + 1 });
+  getRandom = () => Math.floor(Math.random() * 1000);
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.count1 !== this.state.count1) {
+      this.divRefs.forEach(({ current: div }) => {
+        const offsetWidth = div ? div.offsetWidth : 0;
+        console.log(offsetWidth);
+      });
+      if (this.state.count1 % 2 !== 0) this.setState({ count2: this.getRandom() });
+    }
   }
 
   handleClick = () => {
-    this.setState({ count: this.state.count + 1 });
+    this.setState({ count1: this.state.count1 + 1 });
+    this.setState({ count2: this.getRandom() });
   };
 
   render() {
@@ -31,10 +34,19 @@ class WithComponentDidUpdate extends React.Component {
           style={{
             fontSize: "60px",
             fontWeight: "bold",
-            color: this.state.count % 2 === 0 ? "green" : "blue",
+            color: this.state.count1 % 2 === 0 ? "green" : "blue",
           }}
         >
-          {this.state.count}
+          {this.state.count1}
+        </div>
+        <div
+          style={{
+            fontSize: "60px",
+            fontWeight: "bold",
+            color: this.state.count2 % 2 === 0 ? "green" : "blue",
+          }}
+        >
+          {this.state.count2}
         </div>
         <button onClick={this.handleClick}>Try me</button>
       </div>
